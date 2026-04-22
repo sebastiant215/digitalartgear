@@ -7,7 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const TAVILY_KEY = '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';
+const TAVILY_KEY = process.env.TAVILY_API_KEY || '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';
+const AMAZON_TAG = process.env.AMAZON_TAG || 'artrig-20';
 const CLICKS_FILE = path.join(__dirname, 'clicks.json');
 
 // Load or init click log
@@ -21,14 +22,52 @@ function logClick(slug, url) {
   fs.writeFileSync(CLICKS_FILE, JSON.stringify(clicks, null, 2));
 }
 
-// Affiliate link registry — add real affiliate links here as you get approved
-// Format: slug -> { url, tag } (tag = your affiliate tracking tag)
+// Affiliate link registry — curated products with verified affiliate links
+// Format: slug -> { url, name }
 const AFFILIATE_LINKS = {
-  // Example entries — replace URLs with your actual affiliate links
-  'wacom-ctl4100': { url: 'https://www.amazon.com/dp/B079HL9YSF', tag: 'artrig-20' },
-  'huion-h610pro':  { url: 'https://www.amazon.com/dp/B07QQDL682', tag: 'artrig-20' },
-  'xppen-deco01':   { url: 'https://www.amazon.com/dp/B07QQDXXXX', tag: 'artrig-20' },
+  // Drawing Tablets
+  'wacom-ctl4100':       { url: 'https://www.amazon.com/dp/B079HL9YSF', name: 'Wacom CTL4100 One by Wacom' },
+  'wacom-intuos-m':      { url: 'https://www.amazon.com/dp/B079HHD868', name: 'Wacom Intuos Medium' },
+  'wacom-cintiq-16':     { url: 'https://www.amazon.com/dp/B07V8YB5KQ', name: 'Wacom Cintiq 16' },
+  'huion-h610pro':       { url: 'https://www.amazon.com/dp/B07QQDL682', name: 'Huion H610 Pro V2' },
+  'huion-kamvas-13':     { url: 'https://www.amazon.com/dp/B08KGN7GHX', name: 'Huion Kamvas 13' },
+  'xppen-deco01':        { url: 'https://www.amazon.com/dp/B07PFQ9KPV', name: 'XP-Pen Deco 01 V2' },
+  'xppen-artist-12':     { url: 'https://www.amazon.com/dp/B08D5TVC7P', name: 'XP-Pen Artist 12 Pro' },
+  // Monitors
+  'dell-u2722d':         { url: 'https://www.amazon.com/dp/B092PQDQRM', name: 'Dell UltraSharp U2722D' },
+  'lg-27uk850':          { url: 'https://www.amazon.com/dp/B078GVTD9N', name: 'LG 27UK850-W 4K Monitor' },
+  'asus-pa279cv':        { url: 'https://www.amazon.com/dp/B09BKGCQHB', name: 'ASUS ProArt PA279CV' },
+  'benq-sw270c':         { url: 'https://www.amazon.com/dp/B07KXFQM7Z', name: 'BenQ SW270C PhotoVue' },
+  // GPUs
+  'rtx-4070':            { url: 'https://www.amazon.com/s?k=RTX+4070&tag=artrig-20', name: 'NVIDIA RTX 4070' },
+  'rtx-4060':            { url: 'https://www.amazon.com/s?k=RTX+4060&tag=artrig-20', name: 'NVIDIA RTX 4060' },
+  'amd-rx-7800xt':       { url: 'https://www.amazon.com/s?k=AMD+RX+7800+XT&tag=artrig-20', name: 'AMD RX 7800 XT' },
+  // Accessories
+  'evoluent-vm4r':       { url: 'https://www.amazon.com/dp/B00WS9AAXY', name: 'Evoluent Vertical Mouse 4' },
+  'xencelabs-quick-keys': { url: 'https://www.amazon.com/dp/B09P7GD6XQ', name: 'Xencelabs Quick Keys' },
+  'ergotron-lx-arm':     { url: 'https://www.amazon.com/dp/B0026HTBKU', name: 'Ergotron LX Monitor Arm' },
 };
+
+// /redirect?url=<encoded> — tracks AI-generated buy links and injects affiliate tag
+app.get('/redirect', (req, res) => {
+  const raw = req.query.url;
+  if (!raw) return res.status(400).send('Missing url');
+
+  let url;
+  try { url = decodeURIComponent(raw); } catch { return res.status(400).send('Invalid url'); }
+
+  // Only allow http/https
+  if (!/^https?:\/\//i.test(url)) return res.status(400).send('Invalid url');
+
+  // Inject Amazon affiliate tag
+  if (url.includes('amazon.com') && !url.includes('tag=')) {
+    const sep = url.includes('?') ? '&' : '?';
+    url = `${url}${sep}tag=${AMAZON_TAG}`;
+  }
+
+  logClick('redirect', url);
+  res.redirect(302, url);
+});
 
 // /go/:slug — affiliate redirect with click tracking
 app.get('/go/:slug', (req, res) => {
@@ -41,9 +80,9 @@ app.get('/go/:slug', (req, res) => {
 
   // Append affiliate tag if it's an Amazon URL
   let url = entry.url;
-  if (url.includes('amazon.com') && entry.tag) {
+  if (url.includes('amazon.com') && !url.includes('tag=')) {
     const sep = url.includes('?') ? '&' : '?';
-    url = `${url}${sep}tag=${entry.tag}`;
+    url = `${url}${sep}tag=${AMAZON_TAG}`;
   }
 
   logClick(slug, url);

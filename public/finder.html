@@ -562,7 +562,7 @@
             </div>
             <div class="card-right">
               <div class="price">${esc(p.price_estimate || '')}</div>
-              ${p.buy_url ? `<a class="buy-btn" href="${esc(p.buy_url)}" target="_blank" rel="noopener noreferrer">Buy Now ↗</a>` : ''}
+              ${p.buy_url ? `<a class="buy-btn" href="/redirect?url=${encodeURIComponent(p.buy_url)}" target="_blank" rel="noopener noreferrer">Buy Now ↗</a>` : ''}
             </div>
           `;
           cards.appendChild(card);
