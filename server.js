@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const TAVILY_KEY = process.env.TAVILY_API_KEY || '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';
-const AMAZON_TAG = process.env.AMAZON_TAG || 'artrig-20';
+const AMAZON_TAG = process.env.AMAZON_TAG || 'digitalartgear-20';
 const CLICKS_FILE = path.join(__dirname, 'clicks.json');
 
 // Load or init click log
@@ -39,9 +39,9 @@ const AFFILIATE_LINKS = {
   'asus-pa279cv':        { url: 'https://www.amazon.com/dp/B09BKGCQHB', name: 'ASUS ProArt PA279CV' },
   'benq-sw270c':         { url: 'https://www.amazon.com/dp/B07KXFQM7Z', name: 'BenQ SW270C PhotoVue' },
   // GPUs
-  'rtx-4070':            { url: 'https://www.amazon.com/s?k=RTX+4070&tag=artrig-20', name: 'NVIDIA RTX 4070' },
-  'rtx-4060':            { url: 'https://www.amazon.com/s?k=RTX+4060&tag=artrig-20', name: 'NVIDIA RTX 4060' },
-  'amd-rx-7800xt':       { url: 'https://www.amazon.com/s?k=AMD+RX+7800+XT&tag=artrig-20', name: 'AMD RX 7800 XT' },
+  'rtx-4070':            { url: 'https://www.amazon.com/s?k=RTX+4070&tag=digitalartgear-20', name: 'NVIDIA RTX 4070' },
+  'rtx-4060':            { url: 'https://www.amazon.com/s?k=RTX+4060&tag=digitalartgear-20', name: 'NVIDIA RTX 4060' },
+  'amd-rx-7800xt':       { url: 'https://www.amazon.com/s?k=AMD+RX+7800+XT&tag=digitalartgear-20', name: 'AMD RX 7800 XT' },
   // Accessories
   'evoluent-vm4r':       { url: 'https://www.amazon.com/dp/B00WS9AAXY', name: 'Evoluent Vertical Mouse 4' },
   'xencelabs-quick-keys': { url: 'https://www.amazon.com/dp/B09P7GD6XQ', name: 'Xencelabs Quick Keys' },
@@ -183,7 +183,7 @@ Format: {"products": [...]}`;
 
 const PORT = 3457;
 app.listen(PORT, () => {
-  console.log(`\n  ArtRig running at http://localhost:${PORT}`);
+  console.log(`\n  Digital Art Gear running at http://localhost:${PORT}`);
   console.log(`  Pages: / | /finder.html | /about.html | /privacy.html`);
   console.log(`  Affiliate clicks: http://localhost:${PORT}/api/clicks\n`);
 });
