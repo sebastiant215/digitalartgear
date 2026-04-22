@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Gear Finder — ArtRig</title>
+  <meta name="description" content="Describe what you need and AI finds the best gear for digital artists — tablets, monitors, GPUs, courses and more." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0b14;
+      --surface: #13131f;
+      --surface2: #1c1c2e;
+      --border: #252538;
+      --accent: #7c5cfc;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --text: #e4e4f0;
+      --muted: #777799;
+      --radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,11,20,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .nav-logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--accent), #c084fc);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav-logo-name {
+      background: linear-gradient(90deg, #e2e2f0, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* FINDER HEADER */
+    .finder-header {
+      text-align: center;
+      padding: 52px 24px 36px;
+    }
+
+    .finder-header h1 {
+      font-size: clamp(22px, 3.5vw, 34px);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .finder-header p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      max-width: 680px;
+      margin: 0 auto 18px;
+      padding: 0 24px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 6px 6px 20px;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.15);
+    }
+
+    .search-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 15px;
+      padding: 9px 0;
+    }
+
+    .search-input::placeholder { color: var(--muted); }
+
+    .search-btn {
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover { opacity: 0.88; }
+    .search-btn:active { transform: scale(0.97); }
+    .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* CATEGORY CHIPS */
+    .chips-wrap {
+      max-width: 680px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip:hover, .chip.active {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(124,92,252,0.08);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 70px 0;
+    }
+
+    .loading.active { display: flex; }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text { color: var(--muted); font-size: 14px; }
+
+    .loading-steps {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .lstep {
+      font-size: 13px;
+      color: var(--border);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s;
+    }
+
+    .lstep.active { color: var(--accent2); }
+    .lstep.done { color: var(--green); }
+
+    /* AI ANSWER */
+    .ai-answer {
+      display: none;
+      background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(168,85,247,0.06));
+      border: 1px solid rgba(124,92,252,0.25);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #c4b5fd;
+    }
+
+    .ai-answer.visible { display: block; }
+
+    .ai-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent2);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* RESULTS HEADER */
+    .results-bar {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .results-bar.visible { display: flex; }
+
+    .results-info { font-size: 14px; color: var(--muted); }
+    .results-info strong { color: var(--text); }
+
+    /* CARDS */
+    .cards { display: grid; gap: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      animation: fadeUp 0.3s ease both;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.12s; }
+    .card:nth-child(3) { animation-delay: 0.19s; }
+    .card:nth-child(4) { animation-delay: 0.26s; }
+    .card:nth-child(5) { animation-delay: 0.33s; }
+
+    .card:hover { border-color: rgba(124,92,252,0.35); transform: translateY(-2px); }
+
+    .card-left { min-width: 0; }
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .tier-Budget { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
+    .tier-Mid-range { background: rgba(251,191,36,0.1); color: var(--yellow); border: 1px solid rgba(251,191,36,0.22); }
+    .tier-Premium { background: rgba(168,139,250,0.12); color: var(--accent2); border: 1px solid rgba(168,139,250,0.25); }
+
+    .card-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .card-why {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .pros { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+
+    .pros li {
+      font-size: 13px;
+      color: #9090b8;
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      line-height: 1.4;
+    }
+
+    .pros li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .buy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .buy-btn:hover { opacity: 0.86; transform: scale(1.03); }
+
+    /* ERROR / EMPTY */
+    .error-box {
+      display: none;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      color: #fca5a5;
+      font-size: 14px;
+    }
+
+    .error-box.visible { display: block; }
+
+    .empty {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .empty.visible { display: flex; }
+    .empty-icon { font-size: 48px; }
+    .empty h3 { font-size: 18px; font-weight: 600; }
+    .empty p { color: var(--muted); font-size: 14px; }
+
+    @media (max-width: 580px) {
+      .card { grid-template-columns: 1fr; }
+      .card-right { flex-direction: row; justify-content: space-between; align-items: center; }
+      nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">✦</div>
+    <span class="nav-logo-name">ArtRig</span>
+  </a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/about.html">About</a>
+  </div>
+</nav>
+
+<div class="finder-header">
+  <h1>✦ AI Gear Finder</h1>
+  <p>Describe what you need — AI searches the web and ranks the best options for you.</p>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <input
+      class="search-input"
+      id="searchInput"
+      type="text"
+      placeholder="e.g. drawing tablet under $200, GPU for Blender on a budget..."
+      autocomplete="off"
+    />
+    <button class="search-btn" id="searchBtn" onclick="doSearch()">Find Gear</button>
+  </div>
+</div>
+
+<div class="chips-wrap" id="chips">
+  <span class="chip" onclick="setQuery('drawing tablet for digital art under $200')">✏️ Drawing Tablets</span>
+  <span class="chip" onclick="setQuery('best monitor for digital art color accuracy')">🖥️ Monitors</span>
+  <span class="chip" onclick="setQuery('best GPU for Blender 3D rendering')">⚡ GPUs</span>
+  <span class="chip" onclick="setQuery('best PC build for 3D animation and rendering under $1500')">🖥 PC Builds</span>
+  <span class="chip" onclick="setQuery('best online courses for learning Blender ZBrush Procreate')">🎓 Courses</span>
+  <span class="chip" onclick="setQuery('best desk accessories for digital artists setup')">🎨 Accessories</span>
+</div>
+
+<main>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p class="loading-text">Finding the best options...</p>
+    <div class="loading-steps">
+      <div class="lstep" id="ls1">🔍 Searching the web</div>
+      <div class="lstep" id="ls2">🤖 AI analyzing results</div>
+      <div class="lstep" id="ls3">✦ Ranking picks</div>
+    </div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <div class="ai-answer" id="aiAnswer">
+    <div class="ai-label">✦ AI Summary</div>
+    <span id="aiAnswerText"></span>
+  </div>
+
+  <div class="results-bar" id="resultsBar">
+    <p class="results-info">Showing results for <strong id="resultsQuery"></strong></p>
+    <span style="font-size:13px;color:var(--muted);" id="resultsCount"></span>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="empty" id="empty">
+    <div class="empty-icon">🔎</div>
+    <h3>No results found</h3>
+    <p>Try rephrasing or being more specific about your use case.</p>
+  </div>
+</main>
+
+<script>
+  const input = document.getElementById('searchInput');
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  // Auto-run if query param is set
+  window.addEventListener('DOMContentLoaded', () => {
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q) { input.value = decodeURIComponent(q); doSearch(); }
+  });
+
+  function setQuery(q) {
+    input.value = q;
+    input.focus();
+    doSearch();
+  }
+
+  function setStep(n) {
+    ['ls1','ls2','ls3'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'lstep';
+      if (i < n) el.className += ' done';
+      else if (i === n) el.className += ' active';
+    });
+  }
+
+  async function doSearch() {
+    const query = input.value.trim();
+    if (!query) return;
+
+    const btn = document.getElementById('searchBtn');
+    document.getElementById('cards').innerHTML = '';
+    document.getElementById('errorBox').classList.remove('visible');
+    document.getElementById('aiAnswer').classList.remove('visible');
+    document.getElementById('resultsBar').classList.remove('visible');
+    document.getElementById('empty').classList.remove('visible');
+
+    const loading = document.getElementById('loading');
+    loading.classList.add('active');
+    btn.disabled = true;
+    btn.textContent = 'Searching...';
+    setStep(0);
+
+    const t1 = setTimeout(() => setStep(1), 2500);
+    const t2 = setTimeout(() => setStep(2), 5500);
+
+    try {
+      const res = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      clearTimeout(t1); clearTimeout(t2);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+
+      loading.classList.remove('active');
+
+      if (data.answer) {
+        document.getElementById('aiAnswerText').textContent = data.answer;
+        document.getElementById('aiAnswer').classList.add('visible');
+      }
+
+      const products = data.products || [];
+
+      if (!products.length) {
+        document.getElementById('empty').classList.add('visible');
+      } else {
+        document.getElementById('resultsQuery').textContent = `"${data.query}"`;
+        document.getElementById('resultsCount').textContent = `${products.length} recommendations`;
+        document.getElementById('resultsBar').classList.add('visible');
+
+        const cards = document.getElementById('cards');
+        products.forEach(p => {
+          const tierKey = (p.tier || 'Mid-range').replace(/\s+/g, '-');
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="card-left">
+              <div class="tier-badge tier-${tierKey}">${esc(p.tier || 'Pick')}</div>
+              <h2 class="card-name">${esc(p.name)}</h2>
+              <p class="card-why">${esc(p.why)}</p>
+              <ul class="pros">
+                ${(p.pros || []).map(pro => `<li>${esc(pro)}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="card-right">
+              <div class="price">${esc(p.price_estimate || '')}</div>
+              ${p.buy_url ? `<a class="buy-btn" href="${esc(p.buy_url)}" target="_blank" rel="noopener noreferrer">Buy Now ↗</a>` : ''}
+            </div>
+          `;
+          cards.appendChild(card);
+        });
+      }
+    } catch (err) {
+      clearTimeout(t1); clearTimeout(t2);
+      loading.classList.remove('active');
+      const box = document.getElementById('errorBox');
+      box.textContent = `Error: ${err.message}`;
+      box.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Find Gear';
+    }
+  }
+
+  function esc(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>

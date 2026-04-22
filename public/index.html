@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtRig — Gear & Courses for Digital Artists</title>
+  <meta name="description" content="Find the best tablets, monitors, GPUs, PC builds, and online courses for digital artists. AI-powered recommendations from budget to premium." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0b14;
+      --surface: #13131f;
+      --surface2: #1c1c2e;
+      --border: #252538;
+      --accent: #7c5cfc;
+      --accent2: #a78bfa;
+      --accent-glow: rgba(124,92,252,0.2);
+      --green: #34d399;
+      --text: #e4e4f0;
+      --muted: #777799;
+      --radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11,11,20,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .nav-logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--accent), #c084fc);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav-logo-name {
+      background: linear-gradient(90deg, #e2e2f0, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: white !important;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: opacity 0.2s !important;
+    }
+
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* HERO */
+    .hero {
+      padding: 90px 32px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(124,92,252,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124,92,252,0.12);
+      border: 1px solid rgba(124,92,252,0.3);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: var(--accent2);
+      margin-bottom: 28px;
+    }
+
+    .hero-badge span { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulse 2s infinite; }
+
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.15;
+      max-width: 720px;
+      margin: 0 auto 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent2), #e879f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: white;
+      padding: 13px 28px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 13px 28px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 500;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .btn-secondary:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 52px;
+      flex-wrap: wrap;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 26px; font-weight: 700; color: var(--text); }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+
+    .stat-divider { width: 1px; height: 36px; background: var(--border); }
+
+    /* SECTION */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 32px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* CATEGORIES */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .cat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+
+    .cat-card:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(124,92,252,0.12);
+    }
+
+    .cat-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .cat-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .cat-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 32px;
+    }
+
+    /* HOW IT WORKS */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .step-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* FEATURED BANNER */
+    .featured-banner {
+      background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(168,85,247,0.08));
+      border: 1px solid rgba(124,92,252,0.25);
+      border-radius: 20px;
+      padding: 48px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .featured-banner-text h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .featured-banner-text p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 400px;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-disclosure {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 60px 20px 50px; }
+      .section { padding: 40px 20px; }
+      nav { padding: 0 20px; }
+      .nav-links { gap: 16px; }
+      .featured-banner { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-icon">✦</div>
+    <span class="nav-logo-name">ArtRig</span>
+  </a>
+  <div class="nav-links">
+    <a href="#categories">Categories</a>
+    <a href="/finder.html">AI Finder</a>
+    <a href="/about.html">About</a>
+    <a href="/finder.html" class="nav-cta">Find Gear →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><span></span> AI-Powered Product Discovery</div>
+  <h1>The Smartest Way to Find<br /><em>Gear for Digital Artists</em></h1>
+  <p class="hero-sub">Tablets, monitors, GPUs, PC builds, and courses — AI finds the best picks from budget to premium in seconds.</p>
+  <div class="hero-actions">
+    <a href="/finder.html" class="btn-primary">✦ Try the AI Finder</a>
+    <a href="#categories" class="btn-secondary">Browse Categories</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">AI</div>
+      <div class="stat-label">Powered</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">Free</div>
+      <div class="stat-label">Always</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<div class="section" id="categories">
+  <div class="section-header">
+    <p class="section-label">Browse by Category</p>
+    <h2 class="section-title">Everything a Digital Artist Needs</h2>
+    <p class="section-sub">From your first tablet to a full professional workstation — we cover it all.</p>
+  </div>
+  <div class="categories-grid">
+    <a href="/finder.html?q=drawing+tablet+for+digital+art" class="cat-card">
+      <span class="cat-icon">✏️</span>
+      <div class="cat-name">Drawing Tablets</div>
+      <div class="cat-count">Wacom, Huion, XP-Pen</div>
+    </a>
+    <a href="/finder.html?q=monitor+for+digital+art+color+accuracy" class="cat-card">
+      <span class="cat-icon">🖥️</span>
+      <div class="cat-name">Monitors</div>
+      <div class="cat-count">Color-accurate displays</div>
+    </a>
+    <a href="/finder.html?q=best+GPU+for+3D+rendering+and+Blender" class="cat-card">
+      <span class="cat-icon">⚡</span>
+      <div class="cat-name">GPUs</div>
+      <div class="cat-count">For Blender, ZBrush, Unreal</div>
+    </a>
+    <a href="/finder.html?q=best+PC+build+for+3D+animation+and+rendering" class="cat-card">
+      <span class="cat-icon">🖥</span>
+      <div class="cat-name">PC Builds</div>
+      <div class="cat-count">Complete workstation builds</div>
+    </a>
+    <a href="/finder.html?q=best+online+courses+for+digital+art+and+3D" class="cat-card">
+      <span class="cat-icon">🎓</span>
+      <div class="cat-name">Courses</div>
+      <div class="cat-count">ZBrush, Blender, Procreate</div>
+    </a>
+    <a href="/finder.html?q=best+accessories+for+digital+artists+desk+setup" class="cat-card">
+      <span class="cat-icon">🎨</span>
+      <div class="cat-name">Accessories</div>
+      <div class="cat-count">Stands, gloves, styluses</div>
+    </a>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<div class="section">
+  <div class="section-header">
+    <p class="section-label">How It Works</p>
+    <h2 class="section-title">AI That Actually Understands Artists</h2>
+    <p class="section-sub">Not just a search engine — a recommendation engine that thinks about your use case.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-title">Describe What You Need</div>
+      <p class="step-desc">Tell us in plain language — "drawing tablet under $200 for Procreate-style work on PC" works perfectly.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-title">AI Searches the Web</div>
+      <p class="step-desc">We pull real-time data from reviews, specs, and pricing so recommendations are always current.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-title">Get Ranked Picks</div>
+      <p class="step-desc">Results are ranked from budget to premium with clear explanations — no guesswork, no fluff.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="featured-banner">
+    <div class="featured-banner-text">
+      <h2>Ready to Build Your Dream Setup?</h2>
+      <p>Let AI do the research. You focus on creating. It's free, no account needed.</p>
+    </div>
+    <a href="/finder.html" class="btn-primary" style="flex-shrink:0;">Start Finding Gear →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">
+    <div style="width:24px;height:24px;background:linear-gradient(135deg,#7c5cfc,#c084fc);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;">✦</div>
+    <span style="background:linear-gradient(90deg,#e2e2f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">ArtRig</span>
+  </div>
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/finder.html">AI Finder</a>
+    <a href="#categories">Categories</a>
+    <a href="/about.html">About</a>
+    <a href="/privacy.html">Privacy Policy</a>
+  </div>
+  <p class="footer-disclosure">
+    ArtRig is a participant in affiliate programs including the Amazon Associates Program. We may earn a commission when you purchase through our links, at no extra cost to you. All recommendations are independent and based on real research.
+  </p>
+  <p style="font-size:12px;color:#444466;margin-top:12px;">&copy; 2026 ArtRig. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

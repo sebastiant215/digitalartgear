@@ -1,0 +1,4 @@
+node_modules/
+clicks.json
+.env
+*.log
