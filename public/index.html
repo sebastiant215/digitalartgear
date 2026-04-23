@@ -586,6 +586,141 @@
     .featured-banner p  { color: var(--muted); font-size: 17px; max-width: 420px; margin: 0 auto 36px; line-height: 1.7; position: relative; }
     .featured-banner .btn-primary { font-size: 16px; padding: 17px 44px; position: relative; }
 
+    /* LIVE CATALOG */
+    .catalog-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .catalog-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .catalog-btn:hover, .catalog-btn.active {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(124,92,252,0.1);
+    }
+
+    .catalog-meta {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .product-image {
+      aspect-ratio: 16 / 10;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .product-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .product-name {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .product-price {
+      color: var(--green);
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface2);
+    }
+
+    .pill.status-Active { color: var(--green); border-color: rgba(52,211,153,0.3); }
+
+    .product-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .product-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .catalog-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 26px 0;
+    }
+
     /* ─── FOOTER ─── */
     footer { border-top: 1px solid var(--border); padding: 52px 40px 32px; }
     .footer-inner { max-width: 1100px; margin: 0 auto; }
@@ -830,6 +965,26 @@
   </div>
 </div>
 
+<hr class="divider" />
+
+<div class="section" id="live-catalog">
+  <div class="section-header">
+    <p class="section-label">Live Product Catalog</p>
+    <h2 class="section-title">Pulled Straight From Your Notion Database</h2>
+    <p class="section-sub">Manage products in Notion. The site automatically loads active affiliate picks with their images, prices, and links.</p>
+  </div>
+
+  <div class="catalog-toolbar" id="catalogToolbar">
+    <button class="catalog-btn active" data-category="">All</button>
+  </div>
+
+  <div class="catalog-meta" id="catalogMeta">Loading products…</div>
+  <div class="catalog-state" id="catalogState"></div>
+  <div class="catalog-grid" id="catalogGrid"></div>
+</div>
+
+<hr class="divider" />
+
 <div class="section">
   <div class="featured-banner fade-up">
     <h2>Ready to Build Your Dream Setup?</h2>
@@ -879,6 +1034,112 @@
   }, { threshold: 0.1 });
 
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+  const catalogGrid = document.getElementById('catalogGrid');
+  const catalogMeta = document.getElementById('catalogMeta');
+  const catalogState = document.getElementById('catalogState');
+  const toolbar = document.getElementById('catalogToolbar');
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatPrice(value) {
+    if (value === null || value === undefined || value === '') return 'Price varies';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+
+  function renderProducts(products) {
+    catalogGrid.innerHTML = products.map((product) => `
+      <article class="product-card">
+        <div class="product-image">
+          ${product.imageUrl ? `<img src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(product.name)}" />` : '<span>No image yet</span>'}
+        </div>
+        <div class="product-body">
+          <div class="product-top">
+            <h3 class="product-name">${escapeHtml(product.name)}</h3>
+            <div class="product-price">${escapeHtml(formatPrice(product.price))}</div>
+          </div>
+          <div class="product-meta">
+            ${product.category ? `<span class="pill">${escapeHtml(product.category)}</span>` : ''}
+            ${product.status ? `<span class="pill status-${escapeHtml(product.status)}">${escapeHtml(product.status)}</span>` : ''}
+          </div>
+          <div class="product-actions">
+            <span class="product-note">${product.source === 'notion' ? 'Synced from Notion' : 'Curated fallback'}</span>
+            ${product.affiliateUrl ? `<a class="btn-primary" style="padding:10px 16px;font-size:13px;" href="/redirect?url=${encodeURIComponent(product.affiliateUrl)}" target="_blank" rel="noopener noreferrer">View Deal ↗</a>` : ''}
+          </div>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function syncCategoryButtons(categories, selectedCategory) {
+    const existing = new Map(
+      [...toolbar.querySelectorAll('.catalog-btn[data-category]')].map((btn) => [btn.dataset.category || '', btn])
+    );
+
+    categories.forEach((category) => {
+      if (existing.has(category)) return;
+      const button = document.createElement('button');
+      button.className = 'catalog-btn';
+      button.dataset.category = category;
+      button.textContent = category;
+      toolbar.appendChild(button);
+    });
+
+    [...toolbar.querySelectorAll('.catalog-btn[data-category]')].forEach((btn) => {
+      const value = btn.dataset.category || '';
+      btn.classList.toggle('active', value === selectedCategory);
+      if (value && !categories.includes(value)) {
+        btn.remove();
+      }
+    });
+  }
+
+  async function loadCatalog(category = '') {
+    catalogState.textContent = '';
+    catalogGrid.innerHTML = '';
+    catalogMeta.textContent = 'Loading products…';
+
+    try {
+      const query = category ? `?category=${encodeURIComponent(category)}` : '';
+      const res = await fetch(`/api/products${query}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not load products');
+
+      syncCategoryButtons(data.categories || [], category);
+      catalogMeta.textContent = `${data.count} active product${data.count === 1 ? '' : 's'}${data.category ? ` in ${data.category}` : ''} · source: ${data.source}`;
+
+      if (!data.products.length) {
+        catalogState.textContent = 'No active products match this category yet.';
+        return;
+      }
+
+      renderProducts(data.products);
+    } catch (err) {
+      catalogMeta.textContent = 'Catalog unavailable';
+      catalogState.textContent = err.message;
+    }
+  }
+
+  toolbar.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-category]');
+    if (!button) return;
+
+    toolbar.querySelectorAll('.catalog-btn').forEach((btn) => btn.classList.remove('active'));
+    button.classList.add('active');
+    loadCatalog(button.dataset.category || '');
+  });
+
+  loadCatalog();
 </script>
 
 </body>
