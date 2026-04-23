@@ -462,17 +462,49 @@
 
 <script>
   const input = document.getElementById('searchInput');
+  const searchStatusBox = document.getElementById('errorBox');
+  let searchEnabled = true;
+
   input.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
 
-  window.addEventListener('DOMContentLoaded', () => {
+  // Auto-run if query param is set
+  window.addEventListener('DOMContentLoaded', async () => {
+    await hydrateSearchStatus();
     const q = new URLSearchParams(window.location.search).get('q');
-    if (q) { input.value = decodeURIComponent(q); doSearch(); }
+    if (q && searchEnabled) { input.value = decodeURIComponent(q); doSearch(); }
   });
 
   function setQuery(q) {
     input.value = q;
     input.focus();
-    doSearch();
+    if (searchEnabled) doSearch();
+  }
+
+  async function hydrateSearchStatus() {
+    try {
+      const res = await fetch('/api/search/status');
+      const data = await res.json();
+      if (!res.ok) throw new Error('Unable to load AI search status');
+
+      searchEnabled = !!data.enabled;
+      if (searchEnabled) {
+        searchStatusBox.classList.remove('visible');
+        return;
+      }
+
+      searchStatusBox.textContent = data.message || 'AI Finder is temporarily unavailable.';
+      searchStatusBox.classList.add('visible');
+      const btn = document.getElementById('searchBtn');
+      btn.disabled = true;
+      btn.textContent = 'AI Finder Unavailable';
+    } catch (err) {
+      searchEnabled = false;
+      searchStatusBox.textContent = 'AI Finder status could not be loaded right now.';
+      searchStatusBox.classList.add('visible');
+      const btn = document.getElementById('searchBtn');
+      btn.disabled = true;
+      btn.textContent = 'AI Finder Unavailable';
+    }
   }
 
   function setStep(n) {
@@ -486,7 +518,7 @@
 
   async function doSearch() {
     const query = input.value.trim();
-    if (!query) return;
+    if (!query || !searchEnabled) return;
 
     const btn = document.getElementById('searchBtn');
     document.getElementById('cards').innerHTML = '';

@@ -4,6 +4,7 @@ const fs = require('fs');
 const Anthropic = require('@anthropic-ai/sdk');
 const { createNotionClient, filterProducts } = require('./notion');
 const { buildCatalogCategories, formatAffiliateUrl, isAllowedRedirectUrl } = require('./affiliate');
+const { getSearchConfigStatus } = require('./search-config');
 
 const app = express();
 app.use(express.json());
@@ -22,6 +23,10 @@ const notionClient =
     : null;
 
 const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null;
+const searchConfig = getSearchConfigStatus({
+  tavilyKey: TAVILY_KEY,
+  anthropicKey: ANTHROPIC_API_KEY,
+});
 
 function loadClicks() {
   try {
@@ -147,16 +152,20 @@ app.get('/api/clicks', (req, res) => {
   });
 });
 
+app.get('/api/search/status', (req, res) => {
+  res.json(searchConfig);
+});
+
 app.post('/api/search', async (req, res) => {
   const { query } = req.body;
   if (!query || !query.trim()) {
     return res.status(400).json({ error: 'query required' });
   }
-  if (!TAVILY_KEY) {
-    return res.status(500).json({ error: 'Missing TAVILY_API_KEY' });
-  }
-  if (!anthropic) {
-    return res.status(500).json({ error: 'Missing ANTHROPIC_API_KEY' });
+  if (!searchConfig.enabled) {
+    return res.status(503).json({
+      error: searchConfig.message,
+      missing: searchConfig.missing,
+    });
   }
 
   try {
