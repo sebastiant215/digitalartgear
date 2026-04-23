@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { execFile } = require('child_process');
+const Anthropic = require('@anthropic-ai/sdk');
 
 const app = express();
 app.use(express.json());
@@ -10,6 +10,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const TAVILY_KEY = process.env.TAVILY_API_KEY || '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';
 const AMAZON_TAG = process.env.AMAZON_TAG || 'digitalartgear-20';
 const CLICKS_FILE = path.join(__dirname, 'clicks.json');
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Load or init click log
 function loadClicks() {
@@ -23,7 +25,6 @@ function logClick(slug, url) {
 }
 
 // Affiliate link registry — curated products with verified affiliate links
-// Format: slug -> { url, name }
 const AFFILIATE_LINKS = {
   // Drawing Tablets
   'wacom-ctl4100':       { url: 'https://www.amazon.com/dp/B079HL9YSF', name: 'Wacom CTL4100 One by Wacom' },
@@ -56,10 +57,8 @@ app.get('/redirect', (req, res) => {
   let url;
   try { url = decodeURIComponent(raw); } catch { return res.status(400).send('Invalid url'); }
 
-  // Only allow http/https
   if (!/^https?:\/\//i.test(url)) return res.status(400).send('Invalid url');
 
-  // Inject Amazon affiliate tag
   if (url.includes('amazon.com') && !url.includes('tag=')) {
     const sep = url.includes('?') ? '&' : '?';
     url = `${url}${sep}tag=${AMAZON_TAG}`;
@@ -74,11 +73,8 @@ app.get('/go/:slug', (req, res) => {
   const { slug } = req.params;
   const entry = AFFILIATE_LINKS[slug];
 
-  if (!entry) {
-    return res.status(404).send('Link not found');
-  }
+  if (!entry) return res.status(404).send('Link not found');
 
-  // Append affiliate tag if it's an Amazon URL
   let url = entry.url;
   if (url.includes('amazon.com') && !url.includes('tag=')) {
     const sep = url.includes('?') ? '&' : '?';
@@ -89,7 +85,7 @@ app.get('/go/:slug', (req, res) => {
   res.redirect(302, url);
 });
 
-// /api/clicks — view click stats (for your eyes only)
+// /api/clicks — view click stats
 app.get('/api/clicks', (req, res) => {
   const clicks = loadClicks();
   const stats = clicks.reduce((acc, c) => {
@@ -131,7 +127,12 @@ app.post('/api/search', async (req, res) => {
       .join('\n\n---\n\n');
 
     // 2. Ask Claude to analyze and rank products
-    const prompt = `You are a shopping assistant for digital artists. A user needs: "${query}"
+    const message = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      messages: [{
+        role: 'user',
+        content: `You are a shopping assistant for digital artists. A user needs: "${query}"
 
 Here are real search results from the web:
 ${snippets}
@@ -151,20 +152,11 @@ Rules:
 - Prioritize products relevant to digital artists (tablets, GPUs, monitors, courses, accessories)
 - Return ONLY valid JSON, no markdown fences, no explanation
 
-Format: {"products": [...]}`;
-
-    const claudeOutput = await new Promise((resolve, reject) => {
-      execFile(
-        'claude',
-        ['--print', prompt],
-        { timeout: 45000, maxBuffer: 1024 * 1024 },
-        (err, stdout) => {
-          if (err) reject(err);
-          else resolve(stdout);
-        }
-      );
+Format: {"products": [...]}`
+      }]
     });
 
+    const claudeOutput = message.content[0].text;
     const jsonMatch = claudeOutput.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('Could not parse AI response');
 
