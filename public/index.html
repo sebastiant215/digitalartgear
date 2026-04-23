@@ -9,38 +9,46 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0b0b14;
-      --surface: #13131f;
-      --surface2: #1c1c2e;
-      --border: #252538;
+      --bg: #070710;
+      --surface: #0f0f1e;
+      --surface2: #161628;
+      --border: #1e1e38;
+      --border2: #252548;
       --accent: #7c5cfc;
       --accent2: #a78bfa;
-      --accent-glow: rgba(124,92,252,0.2);
+      --pink: #e879f9;
+      --blue: #38bdf8;
+      --orange: #fb923c;
+      --cyan: #22d3ee;
       --green: #34d399;
-      --text: #e4e4f0;
-      --muted: #777799;
-      --radius: 14px;
+      --yellow: #fbbf24;
+      --text: #eaeaf6;
+      --muted: #6b6b94;
+      --radius: 16px;
+      --radius-lg: 24px;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
       line-height: 1.6;
+      overflow-x: hidden;
     }
 
     a { color: inherit; text-decoration: none; }
 
-    /* NAV */
+    /* ─── NAV ─── */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(11,11,20,0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(7,7,16,0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      height: 60px;
+      padding: 0 40px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -49,24 +57,26 @@
     .nav-logo {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 10px;
       font-weight: 700;
-      font-size: 18px;
+      font-size: 17px;
+      letter-spacing: -0.01em;
     }
 
     .nav-logo-icon {
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, var(--accent), #c084fc);
-      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--pink));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
+      box-shadow: 0 0 20px rgba(124,92,252,0.45);
     }
 
     .nav-logo-name {
-      background: linear-gradient(90deg, #e2e2f0, var(--accent2));
+      background: linear-gradient(90deg, #f0f0ff, var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -74,95 +84,166 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 32px;
     }
 
     .nav-links a {
       font-size: 14px;
       color: var(--muted);
       transition: color 0.2s;
+      font-weight: 500;
     }
 
     .nav-links a:hover { color: var(--text); }
 
     .nav-cta {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), #a855f7) !important;
       color: white !important;
-      padding: 7px 16px;
-      border-radius: 8px;
+      padding: 8px 18px;
+      border-radius: 10px;
       font-size: 13px;
       font-weight: 600;
-      transition: opacity 0.2s !important;
+      box-shadow: 0 4px 18px rgba(124,92,252,0.38);
+      transition: opacity 0.2s, transform 0.15s !important;
     }
 
-    .nav-cta:hover { opacity: 0.85; }
+    .nav-cta:hover { opacity: 0.88 !important; transform: translateY(-1px); }
 
-    /* HERO */
+    /* ─── HERO ─── */
     .hero {
-      padding: 90px 32px 80px;
-      text-align: center;
       position: relative;
+      padding: 110px 40px 80px;
+      text-align: center;
       overflow: hidden;
+      min-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    .hero::before {
-      content: '';
+    .hero-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+    .orb {
       position: absolute;
-      top: -120px;
-      left: 50%;
+      border-radius: 50%;
+      filter: blur(100px);
+      will-change: transform;
+    }
+
+    .orb-1 {
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(124,92,252,0.28), transparent 70%);
+      top: -300px; left: 50%;
       transform: translateX(-50%);
-      width: 700px;
-      height: 400px;
-      background: radial-gradient(ellipse, rgba(124,92,252,0.18) 0%, transparent 70%);
-      pointer-events: none;
+      animation: orbFloat1 12s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(232,121,249,0.18), transparent 70%);
+      top: 80px; right: -160px;
+      animation: orbFloat2 15s ease-in-out infinite;
+    }
+
+    .orb-3 {
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(56,189,248,0.13), transparent 70%);
+      bottom: -80px; left: -80px;
+      animation: orbFloat3 13s ease-in-out infinite;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 0%, transparent 100%);
+    }
+
+    @keyframes orbFloat1 {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(-28px); }
+    }
+    @keyframes orbFloat2 {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-22px) rotate(4deg); }
+    }
+    @keyframes orbFloat3 {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-18px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+      width: 100%;
     }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(124,92,252,0.12);
-      border: 1px solid rgba(124,92,252,0.3);
-      border-radius: 20px;
-      padding: 5px 14px;
+      gap: 8px;
+      background: rgba(124,92,252,0.1);
+      border: 1px solid rgba(124,92,252,0.35);
+      border-radius: 24px;
+      padding: 6px 18px;
       font-size: 13px;
       color: var(--accent2);
-      margin-bottom: 28px;
+      margin-bottom: 34px;
+      letter-spacing: 0.02em;
+      font-weight: 500;
     }
 
-    .hero-badge span { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulse 2s infinite; }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--accent2);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent2);
+      animation: pulse 2s infinite;
+    }
 
-    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform: scale(1); }
+      50%      { opacity:0.45; transform: scale(0.8); }
+    }
 
     .hero h1 {
-      font-size: clamp(32px, 5vw, 56px);
-      font-weight: 800;
-      line-height: 1.15;
-      max-width: 720px;
-      margin: 0 auto 20px;
-      letter-spacing: -0.02em;
+      font-size: clamp(38px, 6.5vw, 72px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 26px;
     }
 
-    .hero h1 em {
-      font-style: normal;
-      background: linear-gradient(90deg, var(--accent2), #e879f9);
+    .h1-plain { display: block; color: var(--text); }
+
+    .h1-gradient {
+      display: block;
+      background: linear-gradient(90deg, var(--accent2) 0%, var(--pink) 55%, #fb923c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .hero-sub {
       color: var(--muted);
-      font-size: 17px;
-      max-width: 500px;
-      margin: 0 auto 40px;
+      font-size: 18px;
+      max-width: 520px;
+      margin: 0 auto 46px;
+      line-height: 1.75;
     }
 
     .hero-actions {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
+      margin-bottom: 56px;
     }
 
     .btn-primary {
@@ -171,287 +252,509 @@
       gap: 8px;
       background: linear-gradient(135deg, var(--accent), #a855f7);
       color: white;
-      padding: 13px 28px;
+      padding: 15px 34px;
       border-radius: var(--radius);
       font-size: 15px;
-      font-weight: 600;
-      transition: opacity 0.2s, transform 0.15s;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 8px 32px rgba(124,92,252,0.5);
     }
 
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 44px rgba(124,92,252,0.6);
+    }
 
     .btn-secondary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border2);
       color: var(--text);
-      padding: 13px 28px;
+      padding: 15px 34px;
       border-radius: var(--radius);
       font-size: 15px;
-      font-weight: 500;
-      transition: border-color 0.2s, transform 0.15s;
+      font-weight: 600;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      backdrop-filter: blur(8px);
     }
 
-    .btn-secondary:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .btn-secondary:hover {
+      border-color: rgba(124,92,252,0.45);
+      background: rgba(124,92,252,0.06);
+      transform: translateY(-2px);
+    }
 
-    .hero-stats {
+    .stats-strip {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 20px 48px;
+    }
+
+    .stat-item { text-align: center; padding: 0 28px; }
+    .stat-item + .stat-item { border-left: 1px solid var(--border2); }
+
+    .stat-num {
+      display: block;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--text), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    .hero-preview {
+      position: relative;
+      z-index: 2;
+      max-width: 540px;
+      width: 100%;
+      margin: 64px auto 0;
+      animation: floatCard 7s ease-in-out infinite;
+    }
+
+    @keyframes floatCard {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+
+    .preview-eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .preview-card {
+      background: rgba(12,12,26,0.85);
+      border: 1px solid rgba(124,92,252,0.3);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 40px 90px rgba(0,0,0,0.65), 0 0 0 1px rgba(124,92,252,0.08) inset;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .preview-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(167,139,250,0.7), transparent);
+    }
+
+    .preview-ai-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 32px;
-      margin-top: 52px;
-      flex-wrap: wrap;
+      gap: 7px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent2);
+      font-weight: 700;
+      margin-bottom: 16px;
     }
 
-    .stat { text-align: center; }
-    .stat-num { font-size: 26px; font-weight: 700; color: var(--text); }
-    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-
-    .stat-divider { width: 1px; height: 36px; background: var(--border); }
-
-    /* SECTION */
-    .section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 32px;
+    .preview-ai-dot {
+      width: 6px; height: 6px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 6px var(--accent2);
     }
 
-    .section-header {
-      text-align: center;
-      margin-bottom: 44px;
+    .preview-rows { display: flex; flex-direction: column; gap: 10px; }
+
+    .preview-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
     }
+
+    .preview-row:first-child {
+      border-color: rgba(124,92,252,0.35);
+      background: rgba(124,92,252,0.06);
+    }
+
+    .preview-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+
+    .preview-info { flex: 1; min-width: 0; }
+    .preview-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview-desc { font-size: 12px; color: var(--muted); }
+    .preview-meta { text-align: right; flex-shrink: 0; }
+    .preview-price { font-size: 14px; font-weight: 700; }
+    .preview-tier { font-size: 11px; margin-top: 2px; font-weight: 600; }
+
+    /* ─── SECTIONS ─── */
+    .section { max-width: 1100px; margin: 0 auto; padding: 80px 40px; }
+    .section-header { text-align: center; margin-bottom: 52px; }
 
     .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--accent2);
-      font-weight: 600;
-      margin-bottom: 10px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      background: rgba(124,92,252,0.08);
+      border: 1px solid rgba(124,92,252,0.2);
+      padding: 5px 14px;
+      border-radius: 20px;
     }
 
     .section-title {
-      font-size: clamp(24px, 3vw, 34px);
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-size: clamp(26px, 3.5vw, 42px);
+      font-weight: 800;
+      margin-bottom: 14px;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
     }
 
-    .section-sub {
-      color: var(--muted);
-      font-size: 15px;
-      max-width: 480px;
-      margin: 0 auto;
+    .section-title em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent2), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* CATEGORIES */
+    .section-sub { color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+
+    .divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2) 20%, var(--border2) 80%, transparent);
+      margin: 0 40px;
+    }
+
+    /* ─── CATEGORIES ─── */
     .categories-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 16px;
     }
 
     .cat-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 24px 20px;
+      padding: 30px 22px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
       text-decoration: none;
       display: block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cat-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--cat-glow, rgba(124,92,252,0.08));
+      opacity: 0;
+      transition: opacity 0.25s;
+      border-radius: var(--radius);
     }
 
     .cat-card:hover {
-      border-color: var(--accent);
-      background: var(--surface2);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(124,92,252,0.12);
+      border-color: var(--cat-border, rgba(124,92,252,0.5));
+      transform: translateY(-5px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.35);
     }
 
-    .cat-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
-      display: block;
+    .cat-card:hover::after { opacity: 1; }
+
+    .cat-icon-wrap {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 16px;
+      transition: transform 0.25s;
+      position: relative; z-index: 1;
     }
 
-    .cat-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
+    .cat-card:hover .cat-icon-wrap { transform: scale(1.12) rotate(-3deg); }
 
-    .cat-count {
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .cat-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; position: relative; z-index: 1; }
+    .cat-count { font-size: 12px; color: var(--muted); position: relative; z-index: 1; line-height: 1.4; }
 
-    /* DIVIDER */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0 32px;
-    }
+    .cat-tablets  { --cat-glow: rgba(124,92,252,0.07); --cat-border: rgba(124,92,252,0.5); }
+    .cat-tablets  .cat-icon-wrap { background: rgba(124,92,252,0.15); }
+    .cat-monitors { --cat-glow: rgba(56,189,248,0.07); --cat-border: rgba(56,189,248,0.45); }
+    .cat-monitors .cat-icon-wrap { background: rgba(56,189,248,0.12); }
+    .cat-gpus     { --cat-glow: rgba(251,146,60,0.07);  --cat-border: rgba(251,146,60,0.45); }
+    .cat-gpus     .cat-icon-wrap { background: rgba(251,146,60,0.12); }
+    .cat-pc       { --cat-glow: rgba(34,211,238,0.07);  --cat-border: rgba(34,211,238,0.45); }
+    .cat-pc       .cat-icon-wrap { background: rgba(34,211,238,0.12); }
+    .cat-courses  { --cat-glow: rgba(52,211,153,0.07);  --cat-border: rgba(52,211,153,0.45); }
+    .cat-courses  .cat-icon-wrap { background: rgba(52,211,153,0.12); }
+    .cat-access   { --cat-glow: rgba(232,121,249,0.07); --cat-border: rgba(232,121,249,0.45); }
+    .cat-access   .cat-icon-wrap { background: rgba(232,121,249,0.12); }
 
-    /* HOW IT WORKS */
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .step-card {
+    /* ─── HOW IT WORKS ─── */
+    .how-box {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 24px;
+      border-radius: var(--radius-lg);
+      padding: 64px 48px;
+      position: relative;
+      overflow: hidden;
     }
+
+    .how-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--pink), var(--blue));
+    }
+
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .step-card { padding: 0 36px; text-align: center; }
+    .step-card + .step-card { border-left: 1px solid var(--border2); }
 
     .step-num {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent), #a855f7);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: white;
-      margin-bottom: 16px;
+      width: 60px; height: 60px;
+      margin: 0 auto 22px;
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900; color: white;
     }
 
-    .step-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+    .step-1 .step-num { background: linear-gradient(135deg, var(--accent), #6d28d9); box-shadow: 0 10px 28px rgba(124,92,252,0.45); }
+    .step-2 .step-num { background: linear-gradient(135deg, #ec4899, var(--pink));   box-shadow: 0 10px 28px rgba(232,121,249,0.45); }
+    .step-3 .step-num { background: linear-gradient(135deg, var(--green), #059669);  box-shadow: 0 10px 28px rgba(52,211,153,0.45); }
 
-    .step-desc {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .step-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .step-desc  { font-size: 14px; color: var(--muted); line-height: 1.75; max-width: 220px; margin: 0 auto; }
 
-    /* FEATURED BANNER */
+    /* ─── CTA BANNER ─── */
     .featured-banner {
-      background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(168,85,247,0.08));
-      border: 1px solid rgba(124,92,252,0.25);
-      border-radius: 20px;
-      padding: 48px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-
-    .featured-banner-text h2 {
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .featured-banner-text p {
-      color: var(--muted);
-      font-size: 15px;
-      max-width: 400px;
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 32px;
+      background: linear-gradient(135deg, rgba(124,92,252,0.14), rgba(232,121,249,0.07));
+      border: 1px solid rgba(124,92,252,0.3);
+      border-radius: var(--radius-lg);
+      padding: 64px 48px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 16px;
+    .featured-banner::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse, rgba(124,92,252,0.18), transparent 70%);
+      pointer-events: none;
     }
 
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+    .featured-banner h2 { font-size: clamp(26px, 3.5vw, 40px); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 14px; position: relative; }
+    .featured-banner p  { color: var(--muted); font-size: 17px; max-width: 420px; margin: 0 auto 36px; line-height: 1.7; position: relative; }
+    .featured-banner .btn-primary { font-size: 16px; padding: 17px 44px; position: relative; }
+
+    /* ─── FOOTER ─── */
+    footer { border-top: 1px solid var(--border); padding: 52px 40px 32px; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+
+    .footer-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 48px; margin-bottom: 44px; flex-wrap: wrap;
     }
 
-    .footer-links a {
+    .footer-brand { max-width: 280px; }
+    .footer-logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 17px; margin-bottom: 14px; }
+
+    .footer-logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--pink));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
       font-size: 13px;
-      color: var(--muted);
-      transition: color 0.2s;
+      box-shadow: 0 0 14px rgba(124,92,252,0.35);
     }
 
-    .footer-links a:hover { color: var(--text); }
+    .footer-tagline { font-size: 13px; color: var(--muted); line-height: 1.65; }
 
-    .footer-disclosure {
-      font-size: 12px;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.6;
+    .footer-col h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; margin-bottom: 16px; }
+    .footer-col a { display: block; font-size: 14px; color: var(--muted); margin-bottom: 11px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 26px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
 
-    @media (max-width: 600px) {
-      .hero { padding: 60px 20px 50px; }
-      .section { padding: 40px 20px; }
+    .footer-disclosure { font-size: 12px; color: #3c3c5a; line-height: 1.65; max-width: 560px; }
+    .footer-copy       { font-size: 12px; color: #3c3c5a; flex-shrink: 0; }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fd1 { transition-delay: 0.08s; }
+    .fd2 { transition-delay: 0.16s; }
+    .fd3 { transition-delay: 0.24s; }
+    .fd4 { transition-delay: 0.32s; }
+    .fd5 { transition-delay: 0.40s; }
+    .fd6 { transition-delay: 0.48s; }
+
+    @media (max-width: 800px) {
       nav { padding: 0 20px; }
-      .nav-links { gap: 16px; }
-      .featured-banner { padding: 32px 24px; }
+      .hero { padding: 80px 24px 60px; min-height: auto; }
+      .section { padding: 60px 24px; }
+      .how-box { padding: 40px 24px; }
+      .featured-banner { padding: 44px 28px; }
+      .stats-strip { padding: 16px 28px; }
+      .hero-preview { display: none; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .step-card + .step-card { border-left: none; border-top: 1px solid var(--border2); padding-top: 32px; margin-top: 32px; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+      .divider { margin: 0 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-links { gap: 14px; }
+      .hero h1 { font-size: 36px; }
+      .stat-item { padding: 0 16px; }
     }
   </style>
 </head>
 <body>
 
-<div style="background:#f59e0b;color:#1a1a1a;text-align:center;padding:10px 16px;font-size:14px;font-weight:600;letter-spacing:0.02em;">
-  🚧 This page is currently under construction — some features may not be fully working yet. Thanks for your patience!
-</div>
-
 <nav>
   <a href="/" class="nav-logo">
-    <div class="nav-logo-icon">✦</div>
+    <div class="nav-logo-icon">&#10022;</div>
     <span class="nav-logo-name">Digital Art Gear</span>
   </a>
   <div class="nav-links">
     <a href="#categories">Categories</a>
     <a href="/finder.html">AI Finder</a>
     <a href="/about.html">About</a>
-    <a href="/finder.html" class="nav-cta">Find Gear →</a>
+    <a href="/finder.html" class="nav-cta">Find Gear &rarr;</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge"><span></span> AI-Powered Product Discovery</div>
-  <h1>The Smartest Way to Find<br /><em>Gear for Digital Artists</em></h1>
-  <p class="hero-sub">Tablets, monitors, GPUs, PC builds, and courses — AI finds the best picks from budget to premium in seconds.</p>
-  <div class="hero-actions">
-    <a href="/finder.html" class="btn-primary">✦ Try the AI Finder</a>
-    <a href="#categories" class="btn-secondary">Browse Categories</a>
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="hero-grid"></div>
   </div>
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num">6</div>
-      <div class="stat-label">Categories</div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      AI-Powered &middot; Real-Time &middot; Always Free
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num">AI</div>
-      <div class="stat-label">Powered</div>
+
+    <h1>
+      <span class="h1-plain">The Smartest Way to Find</span>
+      <span class="h1-gradient">Gear for Digital Artists</span>
+    </h1>
+
+    <p class="hero-sub">
+      Tablets, monitors, GPUs, PC builds, and courses &mdash; just describe what you need and AI finds the best picks ranked from budget to premium.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/finder.html" class="btn-primary">&#10022; Try the AI Finder</a>
+      <a href="#categories" class="btn-secondary">Browse Categories</a>
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num">Free</div>
-      <div class="stat-label">Always</div>
+
+    <div class="stats-strip">
+      <div class="stat-item">
+        <span class="stat-num">6</span>
+        <span class="stat-label">Categories</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">AI</span>
+        <span class="stat-label">Powered</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">Free</span>
+        <span class="stat-label">Always</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-preview">
+    <p class="preview-eyebrow">&#10022; AI Finder in action</p>
+    <div class="preview-card">
+      <div class="preview-ai-row">
+        <div class="preview-ai-dot"></div>
+        AI Recommendations &middot; Drawing Tablets
+      </div>
+      <div class="preview-rows">
+        <div class="preview-row">
+          <div class="preview-icon" style="background:rgba(124,92,252,0.15);">&#9999;&#65039;</div>
+          <div class="preview-info">
+            <div class="preview-name">Wacom One S &mdash; Medium</div>
+            <div class="preview-desc">Best entry-level for Clip Studio &amp; Photoshop</div>
+          </div>
+          <div class="preview-meta">
+            <div class="preview-price">~$80</div>
+            <div class="preview-tier" style="color:var(--green);">Budget</div>
+          </div>
+        </div>
+        <div class="preview-row">
+          <div class="preview-icon" style="background:rgba(251,191,36,0.1);">&#9999;&#65039;</div>
+          <div class="preview-info">
+            <div class="preview-name">Huion Kamvas 13</div>
+            <div class="preview-desc">Display tablet &middot; Full HD &middot; excellent pen feel</div>
+          </div>
+          <div class="preview-meta">
+            <div class="preview-price">~$200</div>
+            <div class="preview-tier" style="color:var(--yellow);">Mid-Range</div>
+          </div>
+        </div>
+        <div class="preview-row">
+          <div class="preview-icon" style="background:rgba(167,139,250,0.1);">&#9999;&#65039;</div>
+          <div class="preview-info">
+            <div class="preview-name">Wacom Cintiq 16</div>
+            <div class="preview-desc">Pro display tablet &middot; industry standard</div>
+          </div>
+          <div class="preview-meta">
+            <div class="preview-price">~$650</div>
+            <div class="preview-tier" style="color:var(--accent2);">Premium</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -459,39 +762,39 @@
 <hr class="divider" />
 
 <div class="section" id="categories">
-  <div class="section-header">
+  <div class="section-header fade-up">
     <p class="section-label">Browse by Category</p>
-    <h2 class="section-title">Everything a Digital Artist Needs</h2>
-    <p class="section-sub">From your first tablet to a full professional workstation — we cover it all.</p>
+    <h2 class="section-title">Everything a Digital Artist <em>Needs</em></h2>
+    <p class="section-sub">From your first tablet to a full professional workstation &mdash; we cover it all.</p>
   </div>
   <div class="categories-grid">
-    <a href="/finder.html?q=drawing+tablet+for+digital+art" class="cat-card">
-      <span class="cat-icon">✏️</span>
+    <a href="/finder.html?q=drawing+tablet+for+digital+art" class="cat-card cat-tablets fade-up fd1">
+      <div class="cat-icon-wrap">&#9999;&#65039;</div>
       <div class="cat-name">Drawing Tablets</div>
       <div class="cat-count">Wacom, Huion, XP-Pen</div>
     </a>
-    <a href="/finder.html?q=monitor+for+digital+art+color+accuracy" class="cat-card">
-      <span class="cat-icon">🖥️</span>
+    <a href="/finder.html?q=monitor+for+digital+art+color+accuracy" class="cat-card cat-monitors fade-up fd2">
+      <div class="cat-icon-wrap">&#128421;&#65039;</div>
       <div class="cat-name">Monitors</div>
       <div class="cat-count">Color-accurate displays</div>
     </a>
-    <a href="/finder.html?q=best+GPU+for+3D+rendering+and+Blender" class="cat-card">
-      <span class="cat-icon">⚡</span>
+    <a href="/finder.html?q=best+GPU+for+3D+rendering+and+Blender" class="cat-card cat-gpus fade-up fd3">
+      <div class="cat-icon-wrap">&#9889;</div>
       <div class="cat-name">GPUs</div>
       <div class="cat-count">For Blender, ZBrush, Unreal</div>
     </a>
-    <a href="/finder.html?q=best+PC+build+for+3D+animation+and+rendering" class="cat-card">
-      <span class="cat-icon">🖥</span>
+    <a href="/finder.html?q=best+PC+build+for+3D+animation+and+rendering" class="cat-card cat-pc fade-up fd4">
+      <div class="cat-icon-wrap">&#128421;</div>
       <div class="cat-name">PC Builds</div>
       <div class="cat-count">Complete workstation builds</div>
     </a>
-    <a href="/finder.html?q=best+online+courses+for+digital+art+and+3D" class="cat-card">
-      <span class="cat-icon">🎓</span>
+    <a href="/finder.html?q=best+online+courses+for+digital+art+and+3D" class="cat-card cat-courses fade-up fd5">
+      <div class="cat-icon-wrap">&#127891;</div>
       <div class="cat-name">Courses</div>
       <div class="cat-count">ZBrush, Blender, Procreate</div>
     </a>
-    <a href="/finder.html?q=best+accessories+for+digital+artists+desk+setup" class="cat-card">
-      <span class="cat-icon">🎨</span>
+    <a href="/finder.html?q=best+accessories+for+digital+artists+desk+setup" class="cat-card cat-access fade-up fd6">
+      <div class="cat-icon-wrap">&#127912;</div>
       <div class="cat-name">Accessories</div>
       <div class="cat-count">Stands, gloves, styluses</div>
     </a>
@@ -501,57 +804,82 @@
 <hr class="divider" />
 
 <div class="section">
-  <div class="section-header">
+  <div class="section-header fade-up">
     <p class="section-label">How It Works</p>
-    <h2 class="section-title">AI That Actually Understands Artists</h2>
-    <p class="section-sub">Not just a search engine — a recommendation engine that thinks about your use case.</p>
+    <h2 class="section-title">AI That <em>Actually Understands</em> Artists</h2>
+    <p class="section-sub">Not just a search engine &mdash; a recommendation engine that thinks about your use case.</p>
   </div>
-  <div class="steps-grid">
-    <div class="step-card">
-      <div class="step-num">1</div>
-      <div class="step-title">Describe What You Need</div>
-      <p class="step-desc">Tell us in plain language — "drawing tablet under $200 for Procreate-style work on PC" works perfectly.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">2</div>
-      <div class="step-title">AI Searches the Web</div>
-      <p class="step-desc">We pull real-time data from reviews, specs, and pricing so recommendations are always current.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">3</div>
-      <div class="step-title">Get Ranked Picks</div>
-      <p class="step-desc">Results are ranked from budget to premium with clear explanations — no guesswork, no fluff.</p>
+  <div class="how-box fade-up">
+    <div class="steps-grid">
+      <div class="step-card step-1">
+        <div class="step-num">1</div>
+        <div class="step-title">Describe What You Need</div>
+        <p class="step-desc">Tell us in plain language &mdash; &ldquo;drawing tablet under $200 for Procreate-style work on PC&rdquo; works perfectly.</p>
+      </div>
+      <div class="step-card step-2">
+        <div class="step-num">2</div>
+        <div class="step-title">AI Searches the Web</div>
+        <p class="step-desc">We pull real-time data from reviews, specs, and pricing so recommendations are always current.</p>
+      </div>
+      <div class="step-card step-3">
+        <div class="step-num">3</div>
+        <div class="step-title">Get Ranked Picks</div>
+        <p class="step-desc">Results are ranked from budget to premium with clear explanations &mdash; no guesswork, no fluff.</p>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="section">
-  <div class="featured-banner">
-    <div class="featured-banner-text">
-      <h2>Ready to Build Your Dream Setup?</h2>
-      <p>Let AI do the research. You focus on creating. It's free, no account needed.</p>
-    </div>
-    <a href="/finder.html" class="btn-primary" style="flex-shrink:0;">Start Finding Gear →</a>
+  <div class="featured-banner fade-up">
+    <h2>Ready to Build Your Dream Setup?</h2>
+    <p>Let AI do the research. You focus on creating.<br>It&rsquo;s free, no account needed.</p>
+    <a href="/finder.html" class="btn-primary">&#10022; Start Finding Gear &rarr;</a>
   </div>
 </div>
 
 <footer>
-  <div class="footer-logo">
-    <div style="width:24px;height:24px;background:linear-gradient(135deg,#7c5cfc,#c084fc);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;">✦</div>
-    <span style="background:linear-gradient(90deg,#e2e2f0,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Digital Art Gear</span>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">&#10022;</div>
+          <span style="background:linear-gradient(90deg,#f0f0ff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Digital Art Gear</span>
+        </div>
+        <p class="footer-tagline">AI-powered gear recommendations for digital artists. From beginner tablets to full professional workstations.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <a href="/">Home</a>
+        <a href="/finder.html">AI Finder</a>
+        <a href="/about.html">About</a>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <a href="/finder.html?q=drawing+tablet+for+digital+art">Drawing Tablets</a>
+        <a href="/finder.html?q=monitor+for+digital+art+color+accuracy">Monitors</a>
+        <a href="/finder.html?q=best+GPU+for+3D+rendering+and+Blender">GPUs</a>
+        <a href="/finder.html?q=best+PC+build+for+3D+animation+and+rendering">PC Builds</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="/privacy.html">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-disclosure">Digital Art Gear participates in affiliate programs including Amazon Associates. We may earn a commission on purchases at no extra cost to you. All recommendations are independent and research-based.</p>
+      <p class="footer-copy">&copy; 2026 Digital Art Gear</p>
+    </div>
   </div>
-  <div class="footer-links">
-    <a href="/">Home</a>
-    <a href="/finder.html">AI Finder</a>
-    <a href="#categories">Categories</a>
-    <a href="/about.html">About</a>
-    <a href="/privacy.html">Privacy Policy</a>
-  </div>
-  <p class="footer-disclosure">
-    Digital Art Gear is a participant in affiliate programs including the Amazon Associates Program. We may earn a commission when you purchase through our links, at no extra cost to you. All recommendations are independent and based on real research.
-  </p>
-  <p style="font-size:12px;color:#444466;margin-top:12px;">&copy; 2026 Digital Art Gear. All rights reserved.</p>
 </footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
 
 </body>
 </html>
